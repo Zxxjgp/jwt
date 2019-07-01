@@ -1,5 +1,6 @@
 package com.example.jwtdemo.jwt;
 
+import com.example.jwtdemo.exception.DFException;
 import io.jsonwebtoken.Claims;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -31,15 +32,21 @@ public class JwtFilterAspect {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         String token = request.getHeader("Token");
         if (StringUtils.isEmpty(token)){
-            throw new Exception("Token is empty");
+            throw new DFException("Token is empty");
         }
         Claims claims = jwtUtils.validateToken(token);
 
         if (null == claims){
-            throw new Exception("Token validate error");
+            throw new DFException("Token validate error");
         }
 
         String s = claims.get("username").toString();
+
+        if ( s.isEmpty() ) {
+            throw new DFException("账户不存在");
+        }
+
+
         System.out.println(s);
 
     }
